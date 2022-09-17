@@ -1,0 +1,21 @@
+apiVersion: argoproj.io/v1alpha1
+kind: CronWorkflow
+metadata:
+  name: feed-scraper-cron
+  namespace: coreader
+spec:
+  schedule: "0 */2 * * *"
+  concurrencyPolicy: "Forbid"
+  failedJobsHistoryLimit: 10
+  successfulJobsHistoryLimit: 3
+
+  workflowSpec:
+
+    arguments:
+      parameters:
+      - name: feeds
+        value: '[{"name":"example","link":"https://www.example.com/rss/"}]'
+    
+    workflowTemplateRef:
+        name: feed-scraper-template
+  

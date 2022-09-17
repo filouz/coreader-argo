@@ -1,0 +1,71 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: {{NAMESPACE}}
+  name: argo-workflows-role
+rules:
+- apiGroups: ["argoproj.io"]
+  resources: ["*"]
+  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  namespace: {{NAMESPACE}}
+  name: argo-cluster-workflows-role
+rules:
+- apiGroups: ["argoproj.io"]
+  resources: ["*"]
+  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+
+---
+
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{USER}}
+  namespace: {{NAMESPACE}} 
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: argo-workflows-role-binding
+  namespace: {{NAMESPACE}}
+subjects:
+- kind: ServiceAccount
+  name: {{USER}}
+  namespace: {{NAMESPACE}}
+roleRef:
+  kind: Role
+  name: argo-workflows-role
+  apiGroup: rbac.authorization.k8s.io
+
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  namespace: {{NAMESPACE}}
+  name: argo-cluster-workflows-role-binding
+subjects:
+- kind: ServiceAccount
+  name: {{USER}}
+  namespace: {{NAMESPACE}}
+roleRef:
+  kind: ClusterRole
+  name: argo-cluster-workflows-role
+  apiGroup: rbac.authorization.k8s.io
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  namespace: {{NAMESPACE}}
+  name: {{USER}}.service-account-token
+  annotations:
+    kubernetes.io/service-account.name: {{USER}}
+type: kubernetes.io/service-account-token

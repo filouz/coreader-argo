@@ -1,0 +1,41 @@
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: feed-scraper-template
+  namespace: coreader
+spec:
+
+  serviceAccountName: coreader
+  
+  activeDeadlineSeconds: 600
+  startingDeadlineSeconds: 600
+
+  entrypoint: main
+  
+  templates:
+  - name: main
+    steps:
+    - - name: scrape
+        template: scrape
+        arguments:
+          parameters:
+          - name: name
+            value: "{{item.name}}"
+          - name: link
+            value: "{{item.link}}"
+        withParam: "{{workflow.parameters.feeds}}"
+  - name: scrape
+    inputs:
+      parameters:
+      - name: name
+      - name: link
+    outputs:
+      parameters:
+      - name: data
+        valueFrom:
+          path: /tmp/output_data.json
+    container:
+      image: <your-crawling-service>:<tag>
+      imagePullPolicy: Always
+      command: ["python", "feed_service.py"]
+      args: ["{{inputs.parameters.name}}", "{{inputs.parameters.link}}"]

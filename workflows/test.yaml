@@ -1,0 +1,15 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  name: feed-scraper-test
+  namespace: coreader
+  
+spec:
+    
+    arguments:
+      parameters:
+      - name: feeds
+        value: '[{"name":"example","link":"https://www.example.com/rss/"}]'
+
+    workflowTemplateRef:
+        name: feed-scraper-template

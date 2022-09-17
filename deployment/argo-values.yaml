@@ -1,0 +1,26 @@
+
+
+image:
+  tag: latest
+
+singleNamespace: true
+
+server:
+  # extraArgs:
+  # - --auth-mode=server
+
+  # Disable the built-in service and enable the use of Ingress.
+  service:
+    enabled: false
+  ingress:
+    enabled: true
+    # Add your Ingress annotations and host here, if applicable.
+    annotations: {}
+    hosts:
+      - {{ARGO_HOST_DOMAIN}}
+    paths:
+      - /
+
+controller:
+  workflowNamespaces: 
+    - {{NAMESPACE}}
